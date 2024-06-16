@@ -7,6 +7,7 @@
 #include "SCharacter.generated.h"
 class UCameraComponent;
 class USpringArmComponent;
+class UInteractComponent;
 
 UCLASS()
 class ACTIONROUELIKE_API ASCharacter : public ACharacter
@@ -22,6 +23,9 @@ protected:
 	UCameraComponent* CameraComponent;
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* SpringArmComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	UInteractComponent* interactComponent;
 	
 	virtual void BeginPlay() override;
 protected:
@@ -37,4 +41,5 @@ public:
 	void MoveForward(float value);
 	void MoveRight(float value);
 	void PrimaryAttack();
+	void PrimaryInteract();
 };

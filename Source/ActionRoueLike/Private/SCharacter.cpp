@@ -3,7 +3,9 @@
 
 #include "SCharacter.h"
 #include "Camera/CameraComponent.h"
+#include "InteractComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "DrawDebugHelpers.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 
@@ -21,6 +23,7 @@ ASCharacter::ASCharacter()
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
 	CameraComponent->SetupAttachment(SpringArmComponent);
 	GetCharacterMovement()->bOrientRotationToMovement = true;
+	interactComponent = CreateDefaultSubobject<UInteractComponent>(TEXT("InteractComponent"));
 	
 	
 	 // 禁用控制器旋转
@@ -58,6 +61,7 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	//
 	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed, this, &ASCharacter::PrimaryAttack);
+	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, this, &ASCharacter::PrimaryInteract);
 }
 
 void ASCharacter::MoveForward(float value)
@@ -93,6 +97,16 @@ void ASCharacter::PrimaryAttack()
 	spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	GetWorld()->SpawnActor<AActor>
 	(projectleClass, spawnTM, spawnParams);
+}
+
+void ASCharacter::PrimaryInteract()
+{
+	//交互组件不为空
+	if (interactComponent)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("E"));
+		interactComponent->PrimaryInteract();
+	}
 }
 
 
