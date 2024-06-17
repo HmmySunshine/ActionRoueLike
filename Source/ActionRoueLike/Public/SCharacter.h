@@ -31,6 +31,13 @@ protected:
 protected:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AActor> projectleClass;
+
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	UAnimMontage* attackAnimMontage;
+
+	FTimerHandle attackTimerHandle;
+
+	
 public:	
 	
 	virtual void Tick(float DeltaTime) override;
@@ -42,4 +49,6 @@ public:
 	void MoveRight(float value);
 	void PrimaryAttack();
 	void PrimaryInteract();
+	void AttackTimerElapsed();
+	
 };

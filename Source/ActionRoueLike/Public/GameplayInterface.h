@@ -23,6 +23,6 @@ class ACTIONROUELIKE_API IGameplayInterface
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	//insigator½»»¥Õß
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable,BlueprintNativeEvent)
 	void Interact(APawn* InstigatorPawn);
 };
