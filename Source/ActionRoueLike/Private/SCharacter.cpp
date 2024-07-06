@@ -7,6 +7,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "DrawDebugHelpers.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "AttributeComponent.h"
 
 
 // Sets default values
@@ -24,7 +26,7 @@ ASCharacter::ASCharacter()
 	CameraComponent->SetupAttachment(SpringArmComponent);
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	interactComponent = CreateDefaultSubobject<UInteractComponent>(TEXT("InteractComponent"));
-	
+	attributeComp = CreateDefaultSubobject<UAttributeComponent>(TEXT("AttributeComponent"));
 	
 	 // 禁用控制器旋转
 	
@@ -65,6 +67,7 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	//跳跃
 	PlayerInputComponent->BindAction("PrimaryJump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("PrimaryJump", IE_Released, this, &ACharacter::StopJumping);
+	PlayerInputComponent->BindAction("AttackHole", IE_Pressed, this, &ASCharacter::AttackHole);
 }
 
 void ASCharacter::MoveForward(float value)
@@ -109,14 +112,57 @@ void ASCharacter::PrimaryInteract()
 
 void ASCharacter::AttackTimerElapsed()
 {
+	
 	FVector handLocation = GetMesh()->GetSocketLocation("Muzzle_01");
 	//变换矩阵
-	FTransform spawnTM = FTransform(GetActorRotation(), handLocation);
+	//获取摄像机的旋转
+	FRotator cameraRotation = CameraComponent->GetComponentRotation();
+	 //获取摄像机的位置
+	FVector rayDirection = cameraRotation.Vector();
+	FVector cameraLocation = CameraComponent->GetComponentLocation();
+	FVector start = cameraLocation;
+	FVector end = start + (rayDirection * 10000);
+	FHitResult hitResult;
+	bool bHit = GetWorld()->LineTraceSingleByChannel(hitResult, start, end, ECC_WorldDynamic, FCollisionQueryParams::DefaultQueryParam);
+	//子弹方向
+	FVector shootDirection;
+	if (bHit) 
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Hit"));
+		shootDirection = hitResult.ImpactPoint - handLocation;
+
+	}
+	else {
+		shootDirection = hitResult.TraceEnd - handLocation;
+		UE_LOG(LogTemp, Warning, TEXT("NO Hit"));
+	}
+	FVector amiLoaction =  hitResult.ImpactPoint;
+	
+	FRotator shootRotation = UKismetMathLibrary::FindLookAtRotation(handLocation, handLocation + shootDirection);
+	//绘制射线
+	FColor lineColor = bHit ? FColor::Blue : FColor::Red;
+	DrawDebugLine(GetWorld(), start, end, lineColor, false, 2.0f, 0, 2.0f);
+	
+	//FTransform spawnTM = FTransform(GetActorRotation(), handLocation);
+	FTransform spawnTM = FTransform(shootRotation, handLocation);
 	FActorSpawnParameters spawnParams;
 	//总是生成无视碰撞
 	spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	GetWorld()->SpawnActor<AActor>
 		(projectleClass, spawnTM, spawnParams);
+	
+}
+
+void ASCharacter::AttackHole()
+{
+	UE_LOG(LogTemp, Warning, TEXT("attack_hole"));
+	PlayAnimMontage(attackAnimMontage);
+	FVector handLoaction = GetMesh()->GetSocketLocation("Muzzle_01");
+	
+	FTransform spawnTM = FTransform(GetActorRotation(), handLoaction);
+	FActorSpawnParameters spawnParmas;
+	spawnParmas.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	GetWorld()->SpawnActor<AActor>(holeClass, spawnTM, spawnParmas);
 }
 
 

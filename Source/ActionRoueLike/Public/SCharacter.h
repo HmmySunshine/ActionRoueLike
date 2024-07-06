@@ -8,6 +8,7 @@
 class UCameraComponent;
 class USpringArmComponent;
 class UInteractComponent;
+class UAttributeComponent;
 
 UCLASS()
 class ACTIONROUELIKE_API ASCharacter : public ACharacter
@@ -27,10 +28,16 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UInteractComponent* interactComponent;
 	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "component")
+	UAttributeComponent* attributeComp;
 	virtual void BeginPlay() override;
+
 protected:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AActor> projectleClass;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AActor> holeClass;
 
 	UPROPERTY(EditAnywhere, Category = "Attack")
 	UAnimMontage* attackAnimMontage;
@@ -48,7 +55,8 @@ public:
 	void MoveForward(float value);
 	void MoveRight(float value);
 	void PrimaryAttack();
+
 	void PrimaryInteract();
 	void AttackTimerElapsed();
-	
+	void AttackHole();
 };

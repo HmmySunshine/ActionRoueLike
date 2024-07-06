@@ -19,11 +19,12 @@ void UInteractComponent::PrimaryInteract()
 { 
 	FCollisionObjectQueryParams objectQueryParam;
 	objectQueryParam.AddObjectTypesToQuery(ECC_WorldDynamic);
+	
 	//GetOwner 方法通常用于获取一个组件所属的 Actor。
 	AActor* owner = GetOwner();
 	if (!owner)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Owner is null"));
+		UE_LOG(LogTemp, Log, TEXT("Owner is null"));
 		return;
 	}
 	FVector eyeLocation;

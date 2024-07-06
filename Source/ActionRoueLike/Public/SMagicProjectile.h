@@ -9,6 +9,7 @@ class USphereComponent;
 class UParticleSystemComponent;
 class UProjectileMovementComponent;
 
+
 UCLASS()
 class ACTIONROUELIKE_API ASMagicProjectile : public AActor
 {
@@ -21,7 +22,12 @@ public:
 
 protected:
 	// Called when the game starts or when spawned
-	//球体组件
+	virtual void PostInitializeComponents() override;
+
+	UFUNCTION(BlueprintCallable)
+	void OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	USphereComponent* sphereComp;
 	//粒子效果
@@ -32,6 +38,8 @@ protected:
 	UProjectileMovementComponent* moveComp;
 
 	virtual void BeginPlay() override;
+	
+	
 
 public:	
 	// Called every frame
